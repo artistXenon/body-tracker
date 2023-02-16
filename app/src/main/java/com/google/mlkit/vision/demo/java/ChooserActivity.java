@@ -16,8 +16,10 @@
 
 package com.google.mlkit.vision.demo.java;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
@@ -31,13 +33,23 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import com.google.mlkit.vision.demo.BuildConfig;
 import com.google.mlkit.vision.demo.R;
+
+import java.util.ArrayList;
 
 /** Demo app chooser which allows you pick from all available testing Activities. */
 public final class ChooserActivity extends AppCompatActivity
     implements AdapterView.OnItemClickListener {
   private static final String TAG = "ChooserActivity";
+  private static final int PERMISSION_REQUESTS = 1;
+  private static final String[] REQUIRED_RUNTIME_PERMISSIONS = {
+    Manifest.permission.CAMERA,
+    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+    Manifest.permission.READ_EXTERNAL_STORAGE
+  };
 
   @SuppressWarnings("NewApi") // CameraX is only available on API 21+
   private static final Class<?>[] CLASSES =
@@ -66,6 +78,9 @@ public final class ChooserActivity extends AppCompatActivity
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
+    if (!allRuntimePermissionsGranted()) {
+      getRuntimePermissions();
+    }
     if (BuildConfig.DEBUG) {
       StrictMode.setThreadPolicy(
           new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build());
@@ -95,6 +110,42 @@ public final class ChooserActivity extends AppCompatActivity
   public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
     Class<?> clicked = CLASSES[position];
     startActivity(new Intent(this, clicked));
+  }
+
+  private boolean allRuntimePermissionsGranted() {
+    for (String permission : REQUIRED_RUNTIME_PERMISSIONS) {
+      if (!isPermissionGranted(this, permission)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private boolean isPermissionGranted(Context context, String permission) {
+    if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
+    ) {
+      Log.i(TAG, "Permission granted: $permission");
+      return true;
+    }
+    Log.i(TAG, "Permission NOT granted: $permission");
+    return false;
+  }
+
+  private void getRuntimePermissions() {
+    ArrayList<String> permissionsToRequest = new ArrayList<String>();
+    for (String permission : REQUIRED_RUNTIME_PERMISSIONS) {
+      if (!isPermissionGranted(this, permission)) {
+        permissionsToRequest.add(permission);
+      }
+    }
+
+    if (!permissionsToRequest.isEmpty()) {
+      ActivityCompat.requestPermissions(
+        this,
+        permissionsToRequest.toArray(new String[0]),
+        PERMISSION_REQUESTS
+      );
+    }
   }
 
   private static class MyArrayAdapter extends ArrayAdapter<Class<?>> {
