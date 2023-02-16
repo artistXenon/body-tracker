@@ -4,15 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.google.mlkit.vision.demo"
     android:installLocation="auto">
-    <!-- CameraX libraries require minSdkVersion 21, while this quickstart app
-    supports low to 19. Needs to use overrideLibrary to make the merger tool
-    ignore this conflict and import the libraries while keeping the app's lower
-    minSdkVersion value. In code, will check SDK version, before calling CameraX
-    APIs. -->
-    <uses-sdk
-        tools:overrideLibrary="
-          androidx.camera.camera2, androidx.camera.core,
-          androidx.camera.view, androidx.camera.lifecycle" />
 
     <uses-feature android:name="android.hardware.camera"/>
 
@@ -48,19 +39,7 @@
         </activity>
 
         <activity
-            android:name=".java.LivePreviewActivity"
-            android:exported="false"
-            android:theme="@style/AppTheme">
-        </activity>
-
-        <activity
             android:name=".java.CameraXLivePreviewActivity"
-            android:exported="false"
-            android:theme="@style/AppTheme">
-        </activity>
-
-        <activity
-            android:name=".java.CameraXSourceDemoActivity"
             android:exported="false"
             android:theme="@style/AppTheme">
         </activity>

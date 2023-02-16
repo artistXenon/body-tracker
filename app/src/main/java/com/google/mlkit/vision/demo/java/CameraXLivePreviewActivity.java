@@ -75,7 +75,6 @@ import java.util.List;
 
 /** Live preview demo app for ML Kit APIs using CameraX. */
 @KeepName
-@RequiresApi(VERSION_CODES.LOLLIPOP)
 public final class CameraXLivePreviewActivity extends AppCompatActivity
     implements OnItemSelectedListener, CompoundButton.OnCheckedChangeListener {
   private static final String TAG = "CameraXLivePreview";
